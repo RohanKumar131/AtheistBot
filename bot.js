@@ -35,11 +35,11 @@ function logToFile(source, user, input, output) {
   const timestamp = new Date().toISOString();
 
   // Append to log.txt (human-readable)
-  //const textLog = `[${timestamp}] [${source}] ${user}: "${input}"\nAI: ${output}\n\n`;
-  //fs.appendFileSync("log.txt", textLog);
+  const textLog = `[${timestamp}] [${source}] ${user}: "${input}"\nAI: ${output}\n\n`;
+  fs.appendFileSync("log.txt", textLog);
 
   // Append to log.json (machine-readable)
-  const logJsonPath = "./public/log.json";
+  const logJsonPath = "/public/log.json";
   let existingLogs = [];
   if (fs.existsSync(logJsonPath)) {
     try {
@@ -146,21 +146,28 @@ bot.onText(/\/atheistfact/, async (msg) => {
 });
 
 
-// for webssite
-// CORS (optional, for frontend fetch)
+// for website
+
+// ✅ CORS (optional)
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   next();
 });
 
-// Serve frontend files from /public
-app.use(express.static(path.join(__dirname, "public")));
+// ✅ Serve static files from /public
+app.use(express.static("public"));
 
-// Serve log.json
-app.get("/public/log.json", (req, res) => {
-  res.sendFile(path.join(__dirname, "log.json"));
+// ✅ Optional: Redirect "/" to index.html explicitly
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/public/index.html");
 });
 
+// ✅ Serve log.json explicitly
+app.get("/log.json", (req, res) => {
+  res.sendFile(__dirname + "/public/log.json");
+});
+
+// ✅ Start the server
 app.listen(PORT, () => {
-  console.log(`🚀 Server running at port:${PORT}`);
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
