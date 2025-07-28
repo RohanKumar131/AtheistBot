@@ -148,19 +148,19 @@ bot.onText(/\/atheistfact/, async (msg) => {
 
 // for webssite
 // CORS (optional, for frontend fetch)
-// app.use((req, res, next) => {
-//   res.header("Access-Control-Allow-Origin", "*");
-//   next();
-// });
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  next();
+});
 
-// // Serve frontend files from /public
-// app.use(express.static(path.join(__dirname, "public")));
+// Serve frontend files from /public
+app.use(express.static(path.join(__dirname, "public")));
 
-// // Serve log.json
-// app.get("/public/log.json", (req, res) => {
-//   res.sendFile(path.join(__dirname, "log.json"));
-// });
+// Serve log.json
+app.get("/public/log.json", (req, res) => {
+  res.sendFile(path.join(__dirname, "log.json"));
+});
 
-// app.listen(PORT, () => {
-//   console.log(`🚀 Server running at port:${PORT}`);
-// });
+app.listen(PORT, () => {
+  console.log(`🚀 Server running at port:${PORT}`);
+});
