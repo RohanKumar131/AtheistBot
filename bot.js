@@ -5,9 +5,9 @@ const ModelClient = require("@azure-rest/ai-inference").default;
 const { AzureKeyCredential } = require("@azure/core-auth");
 const { isUnexpected } = require("@azure-rest/ai-inference");
 const express = require("express");
-const path = require("path");
+
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Env tokens
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
@@ -38,8 +38,15 @@ function logToFile(source, user, input, output) {
   const textLog = `[${timestamp}] [${source}] ${user}: "${input}"\nAI: ${output}\n\n`;
   fs.appendFileSync("log.txt", textLog);
 
-  // Append to log.json (machine-readable)
-  const logJsonPath = "/public/log.json";
+  // ✅ Safe relative path for public/log.json
+  const logJsonPath = "public/log.json";
+
+  // ✅ Ensure public folder exists
+  if (!fs.existsSync("public")) {
+    fs.mkdirSync("public", { recursive: true });
+  }
+
+  // ✅ Read and parse existing logs
   let existingLogs = [];
   if (fs.existsSync(logJsonPath)) {
     try {
@@ -84,7 +91,6 @@ async function askGPT41(userInput) {
     }
 
     const reply = response.body.choices?.[0]?.message?.content || "No response from the model.";
-    //console.log(`[GPT-4.1 REPLY]: ${reply}`);
     return reply;
   } catch (err) {
     console.error("GPT-4.1 Exception:", err);
@@ -92,7 +98,7 @@ async function askGPT41(userInput) {
   }
 }
 
-// Handle private and mentioned messages
+// Handle messages
 bot.on("message", async (msg) => {
   const chatId = msg.chat.id;
   const text = msg.text;
@@ -110,10 +116,8 @@ bot.on("message", async (msg) => {
 
   if (isPrivate) {
     question = text;
-    //console.log(`[PRIVATE] ${msg.from.first_name}: ${question}`);
   } else if (isMentioned) {
     question = text.match(mentionPattern)[1].trim();
-    //console.log(`[GROUP][Mentioned] ${msg.from.first_name}: ${question}`);
   }
 
   if (question) {
@@ -145,29 +149,30 @@ bot.onText(/\/atheistfact/, async (msg) => {
   logToFile("COMMAND:/atheistfact", msg.from.first_name, factPrompt, reply);
 });
 
+// =====================
+// 🌐 Express Server Setup
+// =====================
 
-// for website
-
-// ✅ CORS (optional)
+// Allow CORS (optional)
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   next();
 });
 
-// ✅ Serve static files from /public
+// Serve static files from /public
 app.use(express.static("public"));
 
-// ✅ Optional: Redirect "/" to index.html explicitly
+// Serve index.html on /
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/public/index.html");
 });
 
-// ✅ Serve log.json explicitly
+// Serve log.json
 app.get("/log.json", (req, res) => {
   res.sendFile(__dirname + "/public/log.json");
 });
 
-// ✅ Start the server
+// Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
