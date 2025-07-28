@@ -39,7 +39,7 @@ function logToFile(source, user, input, output) {
   //fs.appendFileSync("log.txt", textLog);
 
   // Append to log.json (machine-readable)
-  const logJsonPath = "/public/log.json";
+  const logJsonPath = "./public/log.json";
   let existingLogs = [];
   if (fs.existsSync(logJsonPath)) {
     try {
