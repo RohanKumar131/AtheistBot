@@ -1,1 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🔥 AtheistBot Log</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Fira+Code&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <h1>
+    <a href="https://t.me/herobrine_agent_bot" title="Talk to this bot on Telegram!" target="_blank" rel="noopener noreferrer">
+      🔥 AtheistBot Telegram Chats😎🥶
+    </a>
+  </h1>
+
+
+  <div id="log"></div>
+
+  <footer>
+    Made by ROHAN (<a href="https://t.me/lost_herobrine">telegram</a>) 🧠 AtheistBot.
+  </footer>
+
+  <script>
+    fetch("/log.json")
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById("log");
+        container.innerHTML = "";
+
+        data.reverse().forEach(entry => {
+          const el = document.createElement("div");
+          el.className = "entry";
+
+          el.innerHTML = `
+            <div class="meta">
+              <span><strong>${entry.user}</strong> — ${entry.source}</span>
+              <span>${new Date(entry.timestamp).toLocaleString()}</span>
+            </div>
+            <div class="question">🙋 <strong>Q:</strong> ${entry.question}</div>
+            <div class="reply">🤖 ${entry.reply}</div>
+          `;
+          container.appendChild(el);
+        });
+      })
+      .catch(err => {
+        document.getElementById("log").innerText = "Error loading logs.";
+        console.error(err);
+      });
+  </script>
+</body>
+</html>
 
