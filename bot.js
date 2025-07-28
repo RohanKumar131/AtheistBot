@@ -4,6 +4,10 @@ const TelegramBot = require("node-telegram-bot-api");
 const ModelClient = require("@azure-rest/ai-inference").default;
 const { AzureKeyCredential } = require("@azure/core-auth");
 const { isUnexpected } = require("@azure-rest/ai-inference");
+const express = require("express");
+const path = require("path");
+const app = express();
+const PORT = 3000;
 
 // Env tokens
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
@@ -35,7 +39,7 @@ function logToFile(source, user, input, output) {
   fs.appendFileSync("log.txt", textLog);
 
   // Append to log.json (machine-readable)
-  const logJsonPath = "log.json";
+  const logJsonPath = "/public/log.json";
   let existingLogs = [];
   if (fs.existsSync(logJsonPath)) {
     try {
@@ -106,10 +110,10 @@ bot.on("message", async (msg) => {
 
   if (isPrivate) {
     question = text;
-    console.log(`[PRIVATE] ${msg.from.first_name}: ${question}`);
+    //console.log(`[PRIVATE] ${msg.from.first_name}: ${question}`);
   } else if (isMentioned) {
     question = text.match(mentionPattern)[1].trim();
-    console.log(`[GROUP][Mentioned] ${msg.from.first_name}: ${question}`);
+    //console.log(`[GROUP][Mentioned] ${msg.from.first_name}: ${question}`);
   }
 
   if (question) {
@@ -140,3 +144,23 @@ bot.onText(/\/atheistfact/, async (msg) => {
   console.log(`[COMMAND: /atheistfact] ${msg.from.first_name}`);
   logToFile("COMMAND:/atheistfact", msg.from.first_name, factPrompt, reply);
 });
+
+
+// for webssite
+// CORS (optional, for frontend fetch)
+// app.use((req, res, next) => {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   next();
+// });
+
+// // Serve frontend files from /public
+// app.use(express.static(path.join(__dirname, "public")));
+
+// // Serve log.json
+// app.get("/public/log.json", (req, res) => {
+//   res.sendFile(path.join(__dirname, "log.json"));
+// });
+
+// app.listen(PORT, () => {
+//   console.log(`🚀 Server running at port:${PORT}`);
+// });
