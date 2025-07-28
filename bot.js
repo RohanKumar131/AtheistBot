@@ -35,8 +35,8 @@ function logToFile(source, user, input, output) {
   const timestamp = new Date().toISOString();
 
   // Append to log.txt (human-readable)
-  const textLog = `[${timestamp}] [${source}] ${user}: "${input}"\nAI: ${output}\n\n`;
-  fs.appendFileSync("log.txt", textLog);
+  //const textLog = `[${timestamp}] [${source}] ${user}: "${input}"\nAI: ${output}\n\n`;
+  //fs.appendFileSync("log.txt", textLog);
 
   // Append to log.json (machine-readable)
   const logJsonPath = "/public/log.json";
